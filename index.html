@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Rummy Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .hand { border: 1px solid black; padding: 10px; min-height: 50px; margin-bottom: 10px; }
+        button { padding: 8px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>2-Player Rummy</h1>
+
+    <div id="player1">
+        <h2>Player 1</h2>
+        <div class="hand" id="p1-hand"></div>
+        <button onclick="drawCard(1)">Draw Card</button>
+        <button onclick="discardCard(1)">Discard Card</button>
+    </div>
+
+    <div id="player2">
+        <h2>Player 2</h2>
+        <div class="hand" id="p2-hand"></div>
+        <button onclick="drawCard(2)">Draw Card</button>
+        <button onclick="discardCard(2)">Discard Card</button>
+    </div>
+
+    <script>
+        const deck = ['2♥', '5♦', '7♠', 'K♣', 'A♥', '9♦', 'Q♠'];
+        const playerHands = { 1: [], 2: [] };
+
+        function drawCard(player) {
+            if (deck.length > 0) {
+                const card = deck.pop();
+                playerHands[player].push(card);
+                updateHands();
+            } else {
+                alert('Deck is empty!');
+            }
+        }
+
+        function discardCard(player) {
+            if (playerHands[player].length > 0) {
+                playerHands[player].pop();
+                updateHands();
+            } else {
+                alert('No cards to discard!');
+            }
+        }
+
+        function updateHands() {
+            document.getElementById('p1-hand').innerText = playerHands[1].join(', ');
+            document.getElementById('p2-hand').innerText = playerHands[2].join(', ');
+        }
+
+        updateHands();
+    </script>
+</body>
+</html>
