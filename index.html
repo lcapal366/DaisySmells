@@ -6,31 +6,49 @@
         body { font-family: Arial, sans-serif; text-align: center; }
         .hand { border: 1px solid black; padding: 10px; min-height: 50px; margin-bottom: 10px; }
         button { padding: 8px; margin: 5px; }
+        #winner-message { font-size: 20px; color: green; font-weight: bold; }
     </style>
 </head>
 <body>
     <h1>7-Card Rummy</h1>
-
-    <div id="player1">
-        <h2>Player 1</h2>
-        <div class="hand" id="p1-hand">Your cards: Hidden</div>
-        <button onclick="drawCard()">Draw Card</button>
+    <div id="game-container">
+        <div id="player-status">Waiting for another player...</div>
+        <div id="player-hand" class="hand"></div>
+        <button onclick="submitHand()">Submit Hand</button>
     </div>
+    
+    <div id="winner-message" style="display: none;"></div>
+    <button id="play-again" onclick="restartGame()" style="display: none;">Play Again</button>
 
-    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script> <!-- Added WebSocket Client -->
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <script>
-        // Connect to the Render-hosted server
-        const socket = io("https://daisysmells.onrender.com"); // Replace with your actual Render server URL
+        const socket = io("https://your-app.onrender.com"); // Replace with actual Render server URL
+        let playerHand = [];
 
-        socket.on("yourHand", (hand) => {
-            document.getElementById("p1-hand").innerText = "Your cards: " + hand.map(() => "🂠").join(' ');
+        socket.on("playerAssigned", (playerId) => {
+            document.getElementById("player-status").innerText = `You are Player ${playerId}`;
         });
 
-        function drawCard() {
-            socket.emit("drawCard");
+        socket.on("yourHand", (hand) => {
+            playerHand = hand;
+            document.getElementById("player-hand").innerText = `Your cards: ${hand.join(', ')}`;
+        });
+
+        socket.on("gameWin", (winner) => {
+            document.getElementById("winner-message").innerText = `${winner} wins!`;
+            document.getElementById("winner-message").style.display = "block";
+            document.getElementById("play-again").style.display = "block";
+        });
+
+        function submitHand() {
+            socket.emit("submitHand", playerHand);
+        }
+
+        function restartGame() {
+            socket.emit("restartGame");
+            document.getElementById("winner-message").style.display = "none";
+            document.getElementById("play-again").style.display = "none";
         }
     </script>
-</body>
-</html>
 </body>
 </html>
