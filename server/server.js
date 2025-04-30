@@ -19,38 +19,40 @@ function shuffleDeck() {
 
 io.on("connection", (socket) => {
     console.log("Player connected:", socket.id);
+    console.log("Current players:", Object.keys(players)); // Debug log
 
-    // Add the player if there are fewer than 2 players
     if (Object.keys(players).length < 2) {
         players[socket.id] = { hand: [] };
+        console.log(`Player ${Object.keys(players).length} assigned.`);
         socket.emit("playerAssigned", Object.keys(players).length);
 
-        // Start the game when two players connect
         if (Object.keys(players).length === 2) {
+            console.log("Two players connected. Starting the game...");
             startGame();
         }
     } else {
-        // Reject extra players
+        console.log("Game is full. Disconnecting:", socket.id);
         socket.emit("playerStatus", "Game is full! Try again later.");
         socket.disconnect();
     }
 
-    // Handle "submitHand" from players
     socket.on("submitHand", (hand) => {
+        console.log(`Player submitted hand: ${hand}`); // Debug log
         if (isValidHand(hand)) {
             const playerIndex = Object.keys(players).indexOf(socket.id) + 1;
-            io.emit("gameWin", `Player ${playerIndex}`);
+            io.emit("gameWin", `Player ${playerIndex} wins!`);
             gameActive = false;
+        } else {
+            socket.emit("invalidHand", "Your hand is invalid! Try again.");
         }
     });
 
-    // Handle "restartGame" from players
     socket.on("restartGame", () => {
+        console.log("Restarting game...");
         gameActive = true;
         startGame();
     });
 
-    // Handle player disconnection
     socket.on("disconnect", () => {
         console.log("Player disconnected:", socket.id);
         delete players[socket.id];
@@ -64,14 +66,16 @@ function startGame() {
         for (let i = 0; i < 7; i++) {
             players[playerId].hand.push(deck.pop());
         }
+        console.log(`Dealing hand to Player ${Object.keys(players).indexOf(playerId) + 1}:`, players[playerId].hand); // Debug log
         io.to(playerId).emit("yourHand", players[playerId].hand);
     });
     gameActive = true;
+    console.log("Game has started.");
 }
 
 function isValidHand(hand) {
-    // Basic logic for checking if the hand is valid (sequences or sets)
-    return true; // Placeholder: Implement detailed validation later
+    // Placeholder: Implement detailed validation for sequences/sets
+    return true;
 }
 
 server.listen(3000, () => console.log("Server running on port 3000"));
