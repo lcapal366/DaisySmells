@@ -17,6 +17,10 @@ function shuffleDeck() {
     }
 }
 
+app.get("/", (req, res) => {
+    res.send("WebSocket server is running!");
+});
+
 io.on("connection", (socket) => {
     console.log("Player connected:", socket.id);
     console.log("Current players:", Object.keys(players)); // Debug log
@@ -75,7 +79,7 @@ function startGame() {
 
 function isValidHand(hand) {
     // Placeholder: Implement detailed validation for sequences/sets
-    return true;
+    return true; // Placeholder: Add proper logic later
 }
 
 server.listen(3000, () => console.log("Server running on port 3000"));
