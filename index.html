@@ -22,29 +22,38 @@
 
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <script>
-        const socket = io("https://your-app.onrender.com"); // Replace with actual Render server URL
+        const socket = io("https://your-app.onrender.com"); // Replace with your actual Render server URL
         let playerHand = [];
 
         socket.on("playerAssigned", (playerId) => {
+            console.log(`Player assigned as Player ${playerId}`); // Debug log
             document.getElementById("player-status").innerText = `You are Player ${playerId}`;
         });
 
         socket.on("yourHand", (hand) => {
+            console.log("Received hand:", hand); // Debug log
             playerHand = hand;
             document.getElementById("player-hand").innerText = `Your cards: ${hand.join(', ')}`;
         });
 
         socket.on("gameWin", (winner) => {
-            document.getElementById("winner-message").innerText = `${winner} wins!`;
+            console.log(`${winner} wins!`); // Debug log
+            document.getElementById("winner-message").innerText = winner;
             document.getElementById("winner-message").style.display = "block";
             document.getElementById("play-again").style.display = "block";
         });
 
+        socket.on("invalidHand", (message) => {
+            alert(message); // Notify player of invalid hand
+        });
+
         function submitHand() {
+            console.log("Submitting hand:", playerHand); // Debug log
             socket.emit("submitHand", playerHand);
         }
 
         function restartGame() {
+            console.log("Requesting game restart..."); // Debug log
             socket.emit("restartGame");
             document.getElementById("winner-message").style.display = "none";
             document.getElementById("play-again").style.display = "none";
