@@ -20,30 +20,37 @@ function shuffleDeck() {
 io.on("connection", (socket) => {
     console.log("Player connected:", socket.id);
 
+    // Add the player if there are fewer than 2 players
     if (Object.keys(players).length < 2) {
         players[socket.id] = { hand: [] };
         socket.emit("playerAssigned", Object.keys(players).length);
 
+        // Start the game when two players connect
         if (Object.keys(players).length === 2) {
             startGame();
         }
     } else {
+        // Reject extra players
         socket.emit("playerStatus", "Game is full! Try again later.");
         socket.disconnect();
     }
 
+    // Handle "submitHand" from players
     socket.on("submitHand", (hand) => {
         if (isValidHand(hand)) {
-            io.emit("gameWin", `Player ${Object.keys(players).indexOf(socket.id) + 1}`);
+            const playerIndex = Object.keys(players).indexOf(socket.id) + 1;
+            io.emit("gameWin", `Player ${playerIndex}`);
             gameActive = false;
         }
     });
 
+    // Handle "restartGame" from players
     socket.on("restartGame", () => {
         gameActive = true;
         startGame();
     });
 
+    // Handle player disconnection
     socket.on("disconnect", () => {
         console.log("Player disconnected:", socket.id);
         delete players[socket.id];
@@ -64,7 +71,7 @@ function startGame() {
 
 function isValidHand(hand) {
     // Basic logic for checking if the hand is valid (sequences or sets)
-    return true; // You can implement more detailed validation here
+    return true; // Placeholder: Implement detailed validation later
 }
 
 server.listen(3000, () => console.log("Server running on port 3000"));
