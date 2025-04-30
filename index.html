@@ -20,7 +20,7 @@
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script> <!-- Added WebSocket Client -->
     <script>
         // Connect to the Render-hosted server
-        const socket = io("https://your-app.onrender.com"); // Replace with your actual Render server URL
+        const socket = io("https://daisysmells.onrender.com"); // Replace with your actual Render server URL
 
         socket.on("yourHand", (hand) => {
             document.getElementById("p1-hand").innerText = "Your cards: " + hand.map(() => "🂠").join(' ');
