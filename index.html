@@ -14,63 +14,23 @@
     <div id="player1">
         <h2>Player 1</h2>
         <div class="hand" id="p1-hand">Your cards: Hidden</div>
-        <button onclick="drawCard(1)">Draw Card</button>
-        <button onclick="discardCard(1)">Discard Card</button>
+        <button onclick="drawCard()">Draw Card</button>
     </div>
 
-    <div id="player2">
-        <h2>Player 2</h2>
-        <div class="hand" id="p2-hand">Your cards: Hidden</div>
-        <button onclick="drawCard(2)">Draw Card</button>
-        <button onclick="discardCard(2)">Discard Card</button>
-    </div>
-
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script> <!-- Added WebSocket Client -->
     <script>
-        // Create a shuffled deck
-        const deck = ['2♥', '5♦', '7♠', 'K♣', 'A♥', '9♦', 'Q♠', 'J♣', '3♠', '8♥', '4♦', '6♣', '10♠'];
-        const playerHands = { 1: [], 2: [] };
+        // Connect to the Render-hosted server
+        const socket = io("https://your-app.onrender.com"); // Replace with your actual Render server URL
 
-        function shuffleDeck() {
-            for (let i = deck.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [deck[i], deck[j]] = [deck[j], deck[i]]; // Swap elements
-            }
+        socket.on("yourHand", (hand) => {
+            document.getElementById("p1-hand").innerText = "Your cards: " + hand.map(() => "🂠").join(' ');
+        });
+
+        function drawCard() {
+            socket.emit("drawCard");
         }
-
-        function dealCards() {
-            shuffleDeck();
-            for (let i = 0; i < 7; i++) {
-                playerHands[1].push(deck.pop());
-                playerHands[2].push(deck.pop());
-            }
-        }
-
-        function drawCard(player) {
-            if (deck.length > 0) {
-                playerHands[player].push(deck.pop());
-                updateHands(player);
-            } else {
-                alert('Deck is empty!');
-            }
-        }
-
-        function discardCard(player) {
-            if (playerHands[player].length > 0) {
-                playerHands[player].pop();
-                updateHands(player);
-            } else {
-                alert('No cards to discard!');
-            }
-        }
-
-        function updateHands(player) {
-            document.getElementById(`p${player}-hand`).innerText = "Your cards: " + playerHands[player].map(() => "🂠").join(' ');
-        }
-
-        // Start game by dealing cards
-        dealCards();
-        updateHands(1);
-        updateHands(2);
     </script>
+</body>
+</html>
 </body>
 </html>
