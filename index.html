@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Rummy Game</title>
+    <title>7-Card Rummy</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         .hand { border: 1px solid black; padding: 10px; min-height: 50px; margin-bottom: 10px; }
@@ -9,31 +9,46 @@
     </style>
 </head>
 <body>
-    <h1>2-Player Rummy</h1>
+    <h1>7-Card Rummy</h1>
 
     <div id="player1">
         <h2>Player 1</h2>
-        <div class="hand" id="p1-hand"></div>
+        <div class="hand" id="p1-hand">Your cards: Hidden</div>
         <button onclick="drawCard(1)">Draw Card</button>
         <button onclick="discardCard(1)">Discard Card</button>
     </div>
 
     <div id="player2">
         <h2>Player 2</h2>
-        <div class="hand" id="p2-hand"></div>
+        <div class="hand" id="p2-hand">Your cards: Hidden</div>
         <button onclick="drawCard(2)">Draw Card</button>
         <button onclick="discardCard(2)">Discard Card</button>
     </div>
 
     <script>
-        const deck = ['2♥', '5♦', '7♠', 'K♣', 'A♥', '9♦', 'Q♠'];
+        // Create a shuffled deck
+        const deck = ['2♥', '5♦', '7♠', 'K♣', 'A♥', '9♦', 'Q♠', 'J♣', '3♠', '8♥', '4♦', '6♣', '10♠'];
         const playerHands = { 1: [], 2: [] };
+
+        function shuffleDeck() {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]]; // Swap elements
+            }
+        }
+
+        function dealCards() {
+            shuffleDeck();
+            for (let i = 0; i < 7; i++) {
+                playerHands[1].push(deck.pop());
+                playerHands[2].push(deck.pop());
+            }
+        }
 
         function drawCard(player) {
             if (deck.length > 0) {
-                const card = deck.pop();
-                playerHands[player].push(card);
-                updateHands();
+                playerHands[player].push(deck.pop());
+                updateHands(player);
             } else {
                 alert('Deck is empty!');
             }
@@ -42,18 +57,20 @@
         function discardCard(player) {
             if (playerHands[player].length > 0) {
                 playerHands[player].pop();
-                updateHands();
+                updateHands(player);
             } else {
                 alert('No cards to discard!');
             }
         }
 
-        function updateHands() {
-            document.getElementById('p1-hand').innerText = playerHands[1].join(', ');
-            document.getElementById('p2-hand').innerText = playerHands[2].join(', ');
+        function updateHands(player) {
+            document.getElementById(`p${player}-hand`).innerText = "Your cards: " + playerHands[player].map(() => "🂠").join(' ');
         }
 
-        updateHands();
+        // Start game by dealing cards
+        dealCards();
+        updateHands(1);
+        updateHands(2);
     </script>
 </body>
 </html>
